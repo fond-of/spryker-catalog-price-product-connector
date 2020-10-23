@@ -2,16 +2,26 @@
 
 namespace FondOfSpryker\Client\CatalogPriceProductConnector;
 
-use Generated\Shared\Transfer\CurrencyTransfer;
+use FondOfSpryker\Client\CatalogPriceProductConnector\Price\PriceResolver;
+use FondOfSpryker\Client\CatalogPriceProductConnector\Price\ResolverInterface;
 use Spryker\Client\CatalogPriceProductConnector\CatalogPriceProductConnectorFactory as SprykerCatalogPriceProductConnectorFactory;
 
 class CatalogPriceProductConnectorFactory extends SprykerCatalogPriceProductConnectorFactory
 {
     /**
-     * @return \Generated\Shared\Transfer\CurrencyTransfer
+     * @var \FondOfSpryker\Client\CatalogPriceProductConnector\Price\ResolverInterface
      */
-    public function getCurrentCurrency(): CurrencyTransfer
+    protected $priceResolver;
+
+    /**
+     * @return \FondOfSpryker\Client\CatalogPriceProductConnector\Price\ResolverInterface
+     */
+    public function createPriceResolver(): ResolverInterface
     {
-        return $this->getCurrencyClient()->getCurrent();
+        if ($this->priceResolver === null) {
+            $this->priceResolver = new PriceResolver($this->getPriceClient(), $this->getCurrencyClient());
+        }
+
+        return $this->priceResolver;
     }
 }
