@@ -44,43 +44,9 @@ class CurrencyAwareCatalogSearchResultFormatterPlugin extends SprykerCurrencyAwa
                 continue;
             }
 
-            if (empty($product['prices']['DEFAULT'])) {
-                $product['prices']['DEFAULT'] = $this->getDefaultPrice($product['prices'], $product['price']);
-            }
+            $product = $this->getFactory()->createPriceResolver()->resolve($product);
         }
 
         return $result;
-    }
-
-    /**
-     * @param array $prices
-     * @param int $price
-     *
-     * @return int
-     */
-    protected function getDefaultPrice(array $prices, int $price): int
-    {
-        $iso = $this->getCurrencyIso();
-        if (array_key_exists($iso, $prices)) {
-            foreach ($prices[$iso] as $mode => $priceData) {
-                if (is_array($priceData) && empty($priceData['DEFAULT']) === false) {
-                    return $priceData['DEFAULT'];
-                }
-            }
-        }
-
-        return $price;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getCurrencyIso(): string
-    {
-        if ($this->currentCurrencyIso === null) {
-            $this->currentCurrencyIso = $this->getFactory()->getCurrentCurrency()->getCode();
-        }
-
-        return $this->currentCurrencyIso;
     }
 }
